@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRAMMAR FIGHT! - Comparatives & Superlatives</title>
+    <!-- Tailwind CSS for modern responsive utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for arcade icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron for Arcade headers, Inter for crisp legibility -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Teko:wght@600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --p1-color: #ef4444;
+            --p1-glow: rgba(239, 68, 68, 0.6);
+            --p2-color: #3b82f6;
+            --p2-glow: rgba(59, 130, 246, 0.6);
+            --gold-glow: rgba(234, 179, 8, 0.8);
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        .font-arcade {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .font-impact {
+            font-family: 'Teko', sans-serif;
+        }
+
+        /* Neon Glow Utility Classes */
+        .neon-border-p1 {
+            border-color: #ef4444;
+            box-shadow: 0 0 15px var(--p1-glow);
+        }
+
+        .neon-border-p2 {
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px var(--p2-glow);
+        }
+
+        .neon-text-gold {
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.8), 0 0 20px rgba(234, 179, 8, 0.5);
+        }
+
+        .neon-text-p1 {
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+        }
+
+        .neon-text-p2 {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+        }
+
+        /* Arcade Buttons */
+        .arcade-btn {
+            position: relative;
+            transition: all 0.15s ease;
+            transform: translateY(0);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.3);
+        }
+
+        .arcade-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.5), 0 0 15px currentColor;
+        }
+
+        .arcade-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+        }
+
+        /* Health & Ult Bars Animations */
+        .bar-fill {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ult-bar-glow {
+            animation: ultPulse 1s infinite alternate;
+        }
+
+        @keyframes ultPulse {
+            0% { box-shadow: 0 0 5px #eab308; }
+            100% { box-shadow: 0 0 20px #f59e0b, 0 0 35px #eab308; }
+        }
+
+        /* KO Banner Animation */
+        @keyframes koPop {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+            70% { transform: scale(0.95) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .animate-ko {
+            animation: koPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Scanline Overlay Effect for CRT arcade feel */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Shake Effect container */
+        .shake {
+            animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shakeAnim {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+
+    <!-- Scanline effect layer -->
+    <div class="fixed inset-0 scanlines z-50 pointer-events-none opacity-40"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div id="game-container" class="w-full max-w-5xl bg-slate-900 border-4 border-slate-700 rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-[680px]">
+
+        <!-- ========================================================= -->
+        <!-- 1. START MENU SCREEN -->
+        <!-- ========================================================= -->
+        <div id="screen-start" class="absolute inset-0 z-40 bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 flex flex-col items-center justify-between p-6 sm:p-10 text-center">
+            
+            <!-- Header Logo -->
+            <div class="mt-6 space-y-2">
+                <div class="inline-block px-4 py-1 rounded-full bg-indigo-900/80 border border-indigo-400/30 text-indigo-300 font-bold text-xs sm:text-sm uppercase tracking-widest mb-2">
+                    2-Player Educational Arcade
+                </div>
+                <h1 class="font-arcade text-5xl sm:text-7xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-400 to-blue-500 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+                    GRAMMAR FIGHT!
+                </h1>
+                <p class="font-impact text-2xl sm:text-4xl text-amber-400 tracking-wide uppercase neon-text-gold">
+                    Comparatives & Superlatives Edition
+                </p>
+                <p class="text-slate-400 text-sm max-w-md mx-auto">
+                    Answer grammar questions correctly to launch strikes, stack combos, and unleash ultimate attacks on your classmate!
+                </p>
+            </div>
+
+            <!-- Arcade Fighter Preview Graphic -->
+            <div class="flex items-center justify-center gap-6 my-4">
+                <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-red-600 to-orange-500 border-4 border-red-400 flex items-center justify-center shadow-lg shadow-red-500/30 animate-bounce">
+                    <i class="fa-solid fa-fire text-4xl sm:text-6xl text-amber-200"></i>
+                </div>
+                <span class="font-arcade text-3xl sm:text-5xl font-extrabold text-amber-400 italic">VS</span>
+                <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 border-4 border-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-bounce" style="animation-delay: 0.2s;">
+                    <i class="fa-solid fa-bolt text-4xl sm:text-6xl text-cyan-100"></i>
+                </div>
+            </div>
+
+            <!-- Menu Buttons -->
+            <div class="w-full max-w-xs space-y-3 mb-6">
+                <button onclick="switchScreen('screen-select'); playSound('click');" class="arcade-btn w-full py-4 bg-gradient-to-r from-red-600 via-amber-500 to-red-600 border-2 border-amber-300 rounded-2xl text-slate-950 font-arcade font-black text-xl tracking-wider hover:brightness-110">
+                    <i class="fa-solid fa-play mr-2"></i> START GAME
+                </button>
+                <button onclick="openModal('modal-howtoplay'); playSound('click');" class="arcade-btn w-full py-3 bg-slate-800 border-2 border-slate-600 rounded-2xl text-cyan-400 font-arcade font-bold text-base hover:bg-slate-700">
+                    <i class="fa-solid fa-book-open mr-2"></i> HOW TO PLAY
+                </button>
+                <button onclick="openModal('modal-credits'); playSound('click');" class="arcade-btn w-full py-3 bg-slate-800 border-2 border-slate-600 rounded-2xl text-purple-400 font-arcade font-bold text-base hover:bg-slate-700">
+                    <i class="fa-solid fa-award mr-2"></i> CREDITS
+                </button>
+            </div>
+
+            <div class="text-xs text-slate-500 font-sans">
+                Form 1 CEFR A1 High Grammar • 2-Player Same Device
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 2. CHARACTER SELECTION SCREEN -->
+        <!-- ========================================================= -->
+        <div id="screen-select" class="absolute inset-0 z-30 bg-slate-950 flex flex-col justify-between p-4 sm:p-6 hidden">
+            
+            <div class="text-center">
+                <h2 class="font-arcade text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200 uppercase tracking-wider">
+                    CHOOSE YOUR FIGHTER
+                </h2>
+                <p class="text-slate-400 text-xs sm:text-sm">Player 1 picks Left • Player 2 picks Right</p>
+            </div>
+
+            <!-- Character Roster Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 my-2 max-w-4xl mx-auto w-full">
+                
+                <!-- Fighter 1: Blaze -->
+                <div id="card-blaze" onclick="selectFighter('blaze')" class="fighter-card cursor-pointer bg-slate-900 border-2 border-slate-700 rounded-2xl p-3 flex flex-col items-center hover:border-amber-400 transition-all group relative">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-red-600 to-orange-500 p-1 mb-2 shadow-md group-hover:scale-105 transition-transform flex items-center justify-center">
+                        <i class="fa-solid fa-fire text-4xl text-amber-200"></i>
+                    </div>
+                    <span class="font-arcade text-lg font-bold text-red-400">BLAZE</span>
+                    <span class="text-xs text-slate-400">Fire Striker</span>
+                    <!-- Selection Indicator Badges -->
+                    <div class="p1-badge hidden absolute top-2 left-2 bg-red-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P1</div>
+                    <div class="p2-badge hidden absolute top-2 right-2 bg-blue-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P2</div>
+                </div>
+
+                <!-- Fighter 2: Thunder -->
+                <div id="card-thunder" onclick="selectFighter('thunder')" class="fighter-card cursor-pointer bg-slate-900 border-2 border-slate-700 rounded-2xl p-3 flex flex-col items-center hover:border-amber-400 transition-all group relative">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 p-1 mb-2 shadow-md group-hover:scale-105 transition-transform flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-4xl text-cyan-100"></i>
+                    </div>
+                    <span class="font-arcade text-lg font-bold text-blue-400">THUNDER</span>
+                    <span class="text-xs text-slate-400">Volt Duelist</span>
+                    <div class="p1-badge hidden absolute top-2 left-2 bg-red-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P1</div>
+                    <div class="p2-badge hidden absolute top-2 right-2 bg-blue-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P2</div>
+                </div>
+
+                <!-- Fighter 3: Shadow -->
+                <div id="card-shadow" onclick="selectFighter('shadow')" class="fighter-card cursor-pointer bg-slate-900 border-2 border-slate-700 rounded-2xl p-3 flex flex-col items-center hover:border-amber-400 transition-all group relative">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 p-1 mb-2 shadow-md group-hover:scale-105 transition-transform flex items-center justify-center">
+                        <i class="fa-solid fa-ghost text-4xl text-purple-200"></i>
+                    </div>
+                    <span class="font-arcade text-lg font-bold text-purple-400">SHADOW</span>
+                    <span class="text-xs text-slate-400">Void Ninja</span>
+                    <div class="p1-badge hidden absolute top-2 left-2 bg-red-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P1</div>
+                    <div class="p2-badge hidden absolute top-2 right-2 bg-blue-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P2</div>
+                </div>
+
+                <!-- Fighter 4: Nova -->
+                <div id="card-nova" onclick="selectFighter('nova')" class="fighter-card cursor-pointer bg-slate-900 border-2 border-slate-700 rounded-2xl p-3 flex flex-col items-center hover:border-amber-400 transition-all group relative">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-emerald-600 to-teal-400 p-1 mb-2 shadow-md group-hover:scale-105 transition-transform flex items-center justify-center">
+                        <i class="fa-solid fa-star text-4xl text-emerald-100"></i>
+                    </div>
+                    <span class="font-arcade text-lg font-bold text-emerald-400">NOVA</span>
+                    <span class="text-xs text-slate-400">Cosmic Knight</span>
+                    <div class="p1-badge hidden absolute top-2 left-2 bg-red-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P1</div>
+                    <div class="p2-badge hidden absolute top-2 right-2 bg-blue-600 text-white font-arcade text-xs px-2 py-0.5 rounded-md font-bold shadow">P2</div>
+                </div>
+
+            </div>
+
+            <!-- Selection Status Footer -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto w-full">
+                <div class="flex items-center gap-3">
+                    <span class="font-arcade text-xs text-red-400">P1: <strong id="p1-select-name" class="text-white">Blaze</strong></span>
+                    <span class="text-slate-600">|</span>
+                    <span class="font-arcade text-xs text-blue-400">P2: <strong id="p2-select-name" class="text-white">Thunder</strong></span>
+                </div>
+                
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <button onclick="switchScreen('screen-start'); playSound('click');" class="arcade-btn px-4 py-2 bg-slate-800 text-slate-300 font-arcade text-sm rounded-xl hover:bg-slate-700">
+                        BACK
+                    </button>
+                    <button id="btn-start-fight" onclick="initBattle(); playSound('start');" class="arcade-btn flex-1 sm:flex-none px-8 py-2.5 bg-gradient-to-r from-red-600 to-amber-500 text-slate-950 font-arcade font-black text-lg rounded-xl hover:brightness-110">
+                        FIGHT!
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 3. BATTLE ARENA & QUIZ SCREEN -->
+        <!-- ========================================================= -->
+        <div id="screen-battle" class="absolute inset-0 z-10 bg-slate-950 flex flex-col justify-between hidden">
+            
+            <!-- TOP BAR: HEALTH, TIMER, ULTIMATE METERS -->
+            <div class="p-3 sm:p-4 bg-slate-950/90 border-b-2 border-slate-800 backdrop-blur z-20">
+                <div class="grid grid-cols-12 items-center gap-2 sm:gap-4 max-w-5xl mx-auto">
+                    
+                    <!-- Player 1 HP & Ultimate (Left 5 Cols) -->
+                    <div class="col-span-5 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span id="b-p1-name" class="font-arcade text-xs sm:text-base font-black text-red-500 truncate">PLAYER 1</span>
+                            <span id="b-p1-hp-text" class="font-arcade text-xs sm:text-sm font-bold text-slate-300">100 HP</span>
+                        </div>
+                        <!-- Health Bar -->
+                        <div class="w-full h-4 sm:h-5 bg-slate-800 border-2 border-red-500/50 rounded-lg overflow-hidden relative shadow-inner">
+                            <div id="b-p1-hp-bar" class="h-full bg-gradient-to-r from-red-600 via-amber-500 to-red-500 bar-fill w-full"></div>
+                        </div>
+                        <!-- Ultimate Bar -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-arcade text-amber-400 font-bold">ULT</span>
+                            <div class="flex-1 h-2 bg-slate-800 border border-slate-700 rounded-full overflow-hidden">
+                                <div id="b-p1-ult-bar" class="h-full bg-amber-400 bar-fill w-0"></div>
+                            </div>
+                            <span id="b-p1-ult-badge" class="text-[9px] font-arcade px-1 rounded bg-amber-500/20 text-amber-300 hidden font-extrabold animate-pulse">READY</span>
+                        </div>
+                    </div>
+
+                    <!-- Center Timer & Pause (2 Cols) -->
+                    <div class="col-span-2 flex flex-col items-center justify-center">
+                        <div class="relative flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-900 border-2 border-amber-400 shadow-[0_0_15px_rgba(234,179,8,0.4)]">
+                            <span id="battle-timer" class="font-arcade text-xl sm:text-3xl font-black text-amber-400">10</span>
+                        </div>
+                        <button onclick="togglePause(); playSound('click');" class="mt-1 text-[10px] font-arcade text-slate-400 hover:text-white uppercase tracking-wider">
+                            <i class="fa-solid fa-pause mr-0.5"></i> PAUSE
+                        </button>
+                    </div>
+
+                    <!-- Player 2 HP & Ultimate (Right 5 Cols) -->
+                    <div class="col-span-5 space-y-1 text-right">
+                        <div class="flex items-center justify-between flex-row-reverse">
+                            <span id="b-p2-name" class="font-arcade text-xs sm:text-base font-black text-blue-400 truncate">PLAYER 2</span>
+                            <span id="b-p2-hp-text" class="font-arcade text-xs sm:text-sm font-bold text-slate-300">100 HP</span>
+                        </div>
+                        <!-- Health Bar -->
+                        <div class="w-full h-4 sm:h-5 bg-slate-800 border-2 border-blue-500/50 rounded-lg overflow-hidden relative shadow-inner">
+                            <div id="b-p2-hp-bar" class="h-full bg-gradient-to-l from-blue-600 via-cyan-400 to-blue-500 bar-fill w-full ml-auto"></div>
+                        </div>
+                        <!-- Ultimate Bar -->
+                        <div class="flex items-center gap-1.5 flex-row-reverse">
+                            <span class="text-[10px] font-arcade text-amber-400 font-bold">ULT</span>
+                            <div class="flex-1 h-2 bg-slate-800 border border-slate-700 rounded-full overflow-hidden">
+                                <div id="b-p2-ult-bar" class="h-full bg-amber-400 bar-fill w-0 ml-auto"></div>
+                            </div>
+                            <span id="b-p2-ult-badge" class="text-[9px] font-arcade px-1 rounded bg-amber-500/20 text-amber-300 hidden font-extrabold animate-pulse">READY</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MIDDLE ARENA CANVAS -->
+            <div id="arena-container" class="relative flex-1 bg-slate-950 overflow-hidden flex items-center justify-center">
+                <canvas id="stageCanvas" class="w-full h-full block"></canvas>
+                
+                <!-- Feedback Toast overlay inside arena -->
+                <div id="arena-feedback" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200 z-30">
+                    <div id="fb-title" class="font-arcade text-3xl sm:text-5xl font-black italic tracking-wide text-amber-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">
+                        CORRECT HIT!
+                    </div>
+                    <div id="fb-detail" class="mt-1 font-sans font-bold text-sm sm:text-lg text-white bg-slate-900/90 border border-amber-400/40 px-4 py-1 rounded-full shadow-lg">
+                        Comparative: bigger
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM QUIZ PANEL -->
+            <div class="bg-slate-900 border-t-4 border-slate-800 p-3 sm:p-5 relative z-20 shadow-2xl">
+                
+                <!-- Current Turn Indicator Bar -->
+                <div class="flex items-center justify-between mb-2">
+                    <div id="turn-badge" class="px-3 py-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-400 font-arcade text-xs sm:text-sm font-bold flex items-center gap-2">
+                        <span id="turn-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                        <span id="turn-text">PLAYER 1'S TURN</span>
+                    </div>
+
+                    <!-- Combo Banner -->
+                    <div id="combo-badge" class="hidden px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-300 font-arcade text-xs sm:text-sm font-black italic animate-bounce">
+                        <i class="fa-solid fa-fire mr-1"></i> <span id="combo-count">1</span> HIT COMBO!
+                    </div>
+                </div>
+
+                <!-- Grammar Question Display -->
+                <div class="bg-slate-950 border-2 border-slate-800 rounded-2xl p-3 sm:p-4 mb-3 text-center min-h-[70px] flex items-center justify-center shadow-inner">
+                    <h3 id="question-text" class="text-base sm:text-xl font-bold text-slate-100 leading-snug">
+                        An elephant is __________ (big) than a cat.
+                    </h3>
+                </div>
+
+                <!-- 4 Answer Buttons Grid -->
+                <div id="answers-grid" class="grid grid-cols-2 gap-2 sm:gap-3">
+                    <button onclick="handleAnswer(0)" class="ans-btn arcade-btn py-3 px-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-bold text-sm sm:text-base hover:bg-indigo-950 hover:border-indigo-400 transition-colors text-center truncate">
+                        Option 1
+                    </button>
+                    <button onclick="handleAnswer(1)" class="ans-btn arcade-btn py-3 px-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-bold text-sm sm:text-base hover:bg-indigo-950 hover:border-indigo-400 transition-colors text-center truncate">
+                        Option 2
+                    </button>
+                    <button onclick="handleAnswer(2)" class="ans-btn arcade-btn py-3 px-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-bold text-sm sm:text-base hover:bg-indigo-950 hover:border-indigo-400 transition-colors text-center truncate">
+                        Option 3
+                    </button>
+                    <button onclick="handleAnswer(3)" class="ans-btn arcade-btn py-3 px-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-bold text-sm sm:text-base hover:bg-indigo-950 hover:border-indigo-400 transition-colors text-center truncate">
+                        Option 4
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 4. PAUSE MODAL -->
+        <!-- ========================================================= -->
+        <div id="modal-pause" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 hidden">
+            <div class="bg-slate-900 border-4 border-slate-700 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-4">
+                <h2 class="font-arcade text-4xl font-extrabold text-amber-400">PAUSED</h2>
+                <div class="space-y-3 pt-2">
+                    <button onclick="togglePause(); playSound('click');" class="arcade-btn w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-slate-950 font-arcade font-bold rounded-xl text-lg">
+                        RESUME
+                    </button>
+                    <button onclick="restartMatch(); playSound('click');" class="arcade-btn w-full py-3 bg-slate-800 border-2 border-slate-600 text-slate-200 font-arcade font-bold rounded-xl text-lg hover:bg-slate-700">
+                        RESTART
+                    </button>
+                    <button onclick="quitToMain(); playSound('click');" class="arcade-btn w-full py-3 bg-slate-800 border-2 border-slate-600 text-red-400 font-arcade font-bold rounded-xl text-lg hover:bg-slate-700">
+                        MAIN MENU
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 5. VICTORY SCREEN -->
+        <!-- ========================================================= -->
+        <div id="screen-victory" class="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-between p-6 sm:p-8 text-center hidden">
+            
+            <div class="mt-4 space-y-2">
+                <!-- KO Title -->
+                <div class="font-arcade text-6xl sm:text-8xl font-black text-red-500 italic tracking-widest drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] animate-ko">
+                    K.O.!
+                </div>
+                <h2 id="vic-winner-text" class="font-arcade text-3xl sm:text-5xl font-black text-amber-400 neon-text-gold">
+                    PLAYER 1 WINS!
+                </h2>
+                <div id="vic-perfect-badge" class="hidden inline-block px-4 py-1 rounded-full bg-amber-500 text-slate-950 font-arcade font-black text-sm uppercase tracking-wider animate-pulse">
+                    ★ PERFECT ROUND! ★
+                </div>
+            </div>
+
+            <!-- Winner Avatar Display -->
+            <div class="my-2 relative">
+                <div id="vic-avatar-box" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-amber-400 bg-slate-900 flex items-center justify-center shadow-[0_0_30px_rgba(234,179,8,0.5)] mx-auto">
+                    <i id="vic-avatar-icon" class="fa-solid fa-trophy text-6xl text-amber-400 animate-bounce"></i>
+                </div>
+            </div>
+
+            <!-- Final Game Stats Box -->
+            <div class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 max-w-md w-full grid grid-cols-3 gap-2 text-center">
+                <div class="bg-slate-950 p-2 rounded-xl">
+                    <span class="block text-[10px] font-arcade text-slate-400">TOTAL SCORE</span>
+                    <span id="stat-score" class="font-arcade text-lg font-bold text-amber-400">1250</span>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-xl">
+                    <span class="block text-[10px] font-arcade text-slate-400">ACCURACY</span>
+                    <span id="stat-acc" class="font-arcade text-lg font-bold text-emerald-400">100%</span>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-xl">
+                    <span class="block text-[10px] font-arcade text-slate-400">MAX COMBO</span>
+                    <span id="stat-combo" class="font-arcade text-lg font-bold text-cyan-400">4 HIT</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="w-full max-w-md grid grid-cols-3 gap-3 mb-2">
+                <button onclick="restartMatch(); playSound('click');" class="arcade-btn py-3 bg-gradient-to-r from-red-600 to-amber-500 text-slate-950 font-arcade font-extrabold text-sm sm:text-base rounded-xl">
+                    PLAY AGAIN
+                </button>
+                <button onclick="switchScreen('screen-select'); playSound('click');" class="arcade-btn py-3 bg-slate-800 border border-slate-700 text-slate-200 font-arcade font-bold text-xs sm:text-sm rounded-xl hover:bg-slate-700">
+                    CHARACTERS
+                </button>
+                <button onclick="quitToMain(); playSound('click');" class="arcade-btn py-3 bg-slate-800 border border-slate-700 text-slate-200 font-arcade font-bold text-xs sm:text-sm rounded-xl hover:bg-slate-700">
+                    MAIN MENU
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- MODALS (HOW TO PLAY / CREDITS) -->
+        <!-- ========================================================= -->
+        <!-- How To Play Modal -->
+        <div id="modal-howtoplay" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-slate-900 border-2 border-slate-700 rounded-3xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="font-arcade text-2xl font-bold text-amber-400">HOW TO PLAY</h3>
+                    <button onclick="closeModal('modal-howtoplay')" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div class="space-y-3 text-sm text-slate-300">
+                    <div class="flex items-start gap-3 bg-slate-950 p-3 rounded-xl">
+                        <i class="fa-solid fa-people-arrows text-2xl text-red-400 mt-1"></i>
+                        <div>
+                            <strong class="text-white block font-arcade">2 Players On 1 Device</strong>
+                            Player 1 stays on the left, Player 2 on the right. Players take turns answering grammar questions.
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-950 p-3 rounded-xl">
+                        <i class="fa-solid fa-hand-fist text-2xl text-amber-400 mt-1"></i>
+                        <div>
+                            <strong class="text-white block font-arcade">Attacks & Combos</strong>
+                            Clicking the correct comparative or superlative answer hits your opponent! Consecutive correct answers stack big combo streaks!
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-950 p-3 rounded-xl">
+                        <i class="fa-solid fa-shield-halved text-2xl text-blue-400 mt-1"></i>
+                        <div>
+                            <strong class="text-white block font-arcade">Misses & Timeouts</strong>
+                            Wrong answers or running out of the 10-second timer result in a miss. Turn immediately passes to your opponent.
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-950 p-3 rounded-xl">
+                        <i class="fa-solid fa-bolt text-2xl text-yellow-400 mt-1"></i>
+                        <div>
+                            <strong class="text-white block font-arcade">Ultimate Attacks</strong>
+                            Fill your Ultimate Meter to 100%. Your next correct hit triggers a high-damage finisher move!
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="closeModal('modal-howtoplay')" class="arcade-btn w-full py-2.5 bg-slate-800 text-slate-200 font-arcade font-bold rounded-xl hover:bg-slate-700">
+                    GOT IT!
+                </button>
+            </div>
+        </div>
+
+        <!-- Credits Modal -->
+        <div id="modal-credits" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="bg-slate-900 border-2 border-slate-700 rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+                <h3 class="font-arcade text-2xl font-bold text-purple-400">CREDITS</h3>
+                <div class="space-y-2 text-xs sm:text-sm text-slate-300 bg-slate-950 p-4 rounded-xl">
+                    <p><strong class="text-amber-400">Target Level:</strong> Form 1 CEFR A1 High</p>
+                    <p><strong class="text-amber-400">Grammar Focus:</strong> Comparatives & Superlatives</p>
+                    <p><strong class="text-amber-400">Audio:</strong> Web Audio API Synth Sound Effects</p>
+                    <p><strong class="text-amber-400">Graphics:</strong> Dynamic Canvas 2D Fighter Renderer</p>
+                </div>
+                <button onclick="closeModal('modal-credits')" class="arcade-btn w-full py-2.5 bg-slate-800 text-slate-200 font-arcade font-bold rounded-xl hover:bg-slate-700">
+                    CLOSE
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Logic Section -->
+    <script>
+        
+        // =========================================================
+        // EXACT 20 QUESTION DATA (As required)
+        // =========================================================
+        const QUESTIONS_DATA = [
+            {
+                id: 1,
+                question: "An elephant is __________ (big) than a cat.",
+                correct: "bigger",
+                choices: ["big", "bigger", "biggest", "more big"],
+                rule: "Short adjective comparative: big → bigger"
+            },
+            {
+                id: 2,
+                question: "A mouse is __________ (small) than a rabbit.",
+                correct: "smaller",
+                choices: ["small", "smallest", "smaller", "more small"],
+                rule: "Short adjective comparative: small → smaller"
+            },
+            {
+                id: 3,
+                question: "Ali is __________ (tall) than Adam.",
+                correct: "taller",
+                choices: ["tall", "tallest", "more tall", "taller"],
+                rule: "Short adjective comparative: tall → taller"
+            },
+            {
+                id: 4,
+                question: "A car is __________ (fast) than a bicycle.",
+                correct: "faster",
+                choices: ["faster", "fast", "fastest", "more fast"],
+                rule: "Short adjective comparative: fast → faster"
+            },
+            {
+                id: 5,
+                question: "A pencil is __________ (cheap) than a school bag.",
+                correct: "cheaper",
+                choices: ["cheapest", "cheap", "cheaper", "more cheap"],
+                rule: "Short adjective comparative: cheap → cheaper"
+            },
+            {
+                id: 6,
+                question: "A phone is __________ (expensive) than a pencil.",
+                correct: "more expensive",
+                choices: ["expensive", "expensiver", "most expensive", "more expensive"],
+                rule: "Long adjective comparative: expensive → more expensive"
+            },
+            {
+                id: 7,
+                question: "A ruler is __________ (long) than an eraser.",
+                correct: "longer",
+                choices: ["longest", "longer", "long", "more long"],
+                rule: "Short adjective comparative: long → longer"
+            },
+            {
+                id: 8,
+                question: "A school bag is __________ (heavy) than a pencil case.",
+                correct: "heavier",
+                choices: ["heavier", "heavy", "heaviest", "more heavy"],
+                rule: "Ending in -y comparative: heavy → heavier"
+            },
+            {
+                id: 9,
+                question: "My father is the __________ (tall) person in my family.",
+                correct: "tallest",
+                choices: ["taller", "tall", "tallest", "more tall"],
+                rule: "Superlative: tall → the tallest"
+            },
+            {
+                id: 10,
+                question: "The blue whale is the __________ (big) animal in the world.",
+                correct: "biggest",
+                choices: ["bigger", "big", "more big", "biggest"],
+                rule: "Superlative: big → the biggest"
+            },
+            {
+                id: 11,
+                question: "The cheetah is the __________ (fast) land animal.",
+                correct: "fastest",
+                choices: ["faster", "fastest", "fast", "most fast"],
+                rule: "Superlative: fast → the fastest"
+            },
+            {
+                id: 12,
+                question: "The mouse is the __________ (small) animal in the picture.",
+                correct: "smallest",
+                choices: ["small", "smaller", "smallest", "most small"],
+                rule: "Superlative: small → the smallest"
+            },
+            {
+                id: 13,
+                question: "This is the __________ (beautiful) park in my town.",
+                correct: "most beautiful",
+                choices: ["beautiful", "more beautiful", "beautifulest", "most beautiful"],
+                rule: "Long adjective superlative: beautiful → most beautiful"
+            },
+            {
+                id: 14,
+                question: "English is __________ (easy) than Mathematics.",
+                correct: "easier",
+                choices: ["easiest", "easy", "easier", "more easy"],
+                rule: "Ending in -y comparative: easy → easier"
+            },
+            {
+                id: 15,
+                question: "Science is the __________ (interesting) subject for me.",
+                correct: "most interesting",
+                choices: ["more interesting", "interesting", "interestinger", "most interesting"],
+                rule: "Long adjective superlative: interesting → most interesting"
+            },
+            {
+                id: 16,
+                question: "An apple is __________ (sweet) than a lemon.",
+                correct: "sweeter",
+                choices: ["sweetest", "sweet", "sweeter", "more sweet"],
+                rule: "Short adjective comparative: sweet → sweeter"
+            },
+            {
+                id: 17,
+                question: "A tiger is __________ (dangerous) than a rabbit.",
+                correct: "more dangerous",
+                choices: ["dangerous", "more dangerous", "most dangerous", "dangerouser"],
+                rule: "Long adjective comparative: dangerous → more dangerous"
+            },
+            {
+                id: 18,
+                question: "April is one of the __________ (hot) months in Malaysia.",
+                correct: "hottest",
+                choices: ["hotter", "hot", "hottest", "most hot"],
+                rule: "Superlative: hot → the hottest"
+            },
+            {
+                id: 19,
+                question: "My younger brother is __________ (young) than me.",
+                correct: "younger",
+                choices: ["youngest", "younger", "young", "more young"],
+                rule: "Short adjective comparative: young → younger"
+            },
+            {
+                id: 20,
+                question: "Pizza is the __________ (delicious) food I have eaten.",
+                correct: "most delicious",
+                choices: ["delicious", "more delicious", "deliciousest", "most delicious"],
+                rule: "Long adjective superlative: delicious → most delicious"
+            }
+        ];
+
+        // Fighter Character Profiles
+        const FIGHTERS = {
+            blaze: {
+                name: "Blaze",
+                color: "#ef4444",
+                secondary: "#f97316",
+                icon: "fa-fire",
+                theme: "fire"
+            },
+            thunder: {
+                name: "Thunder",
+                color: "#3b82f6",
+                secondary: "#06b6d4",
+                icon: "fa-bolt",
+                theme: "lightning"
+            },
+            shadow: {
+                name: "Shadow",
+                color: "#a855f7",
+                secondary: "#ec4899",
+                icon: "fa-ghost",
+                theme: "shadow"
+            },
+            nova: {
+                name: "Nova",
+                color: "#10b981",
+                secondary: "#34d399",
+                icon: "fa-star",
+                theme: "cosmic"
+            }
+        };
+
+        // GAME PLAY STATE
+        let gameState = {
+            p1Fighter: "blaze",
+            p2Fighter: "thunder",
+            p1Hp: 100,
+            p2Hp: 100,
+            p1Ult: 0,
+            p2Ult: 0,
+            p1Combo: 0,
+            p2Combo: 0,
+            p1WrongCount: 0,
+            p2WrongCount: 0,
+            p1CorrectCount: 0,
+            p2CorrectCount: 0,
+            p1MaxCombo: 0,
+            p2MaxCombo: 0,
+            currentTurn: 1, // 1 or 2
+            questionPool: [],
+            currentQuestion: null,
+            timer: 10,
+            timerInterval: null,
+            isPaused: false,
+            buttonsLocked: false
+        };
+
+        // Web Audio API Synthesizer (Zero External Audio Dependency)
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioCtx();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.2);
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'ult') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(800, now + 0.4);
+                    gain.gain.setValueAtTime(0.5, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                } else if (type === 'miss') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'start') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'tick') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'ko') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.linearRampToValueAtTime(60, now + 0.8);
+                    gain.gain.setValueAtTime(0.6, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                }
+            } catch (e) {
+                // Audio fallback silence
+            }
+        }
+
+        // =========================================================
+        // CANVAS FIGHTING ARENA ENGINE
+        // =========================================================
+        const canvas = document.getElementById('stageCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        let floatTexts = [];
+        let animationFrameId = null;
+
+        // Visual position & animation state of characters
+        let p1Visual = { x: 0.25, y: 0.7, anim: 'idle', frame: 0, recoil: 0, attackProgress: 0 };
+        let p2Visual = { x: 0.75, y: 0.7, anim: 'idle', frame: 0, recoil: 0, attackProgress: 0 };
+
+        function resizeCanvas() {
+            const container = document.getElementById('arena-container');
+            if (!container) return;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Render Loop
+        function renderStage() {
+            if (!canvas.width) resizeCanvas();
+
+            // 1. Clear & Background Gradient
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Neon Arena Grid Floor
+            const horizonY = canvas.height * 0.72;
+            const floorGradient = ctx.createLinearGradient(0, horizonY, 0, canvas.height);
+            floorGradient.addColorStop(0, '#1e1b4b');
+            floorGradient.addColorStop(1, '#020617');
+            ctx.fillStyle = floorGradient;
+            ctx.fillRect(0, horizonY, canvas.width, canvas.height - horizonY);
+
+            // Floor Neon Line
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, horizonY);
+            ctx.lineTo(canvas.width, horizonY);
+            ctx.stroke();
+
+            // Perspective Grid Lines
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
+            ctx.lineWidth = 1;
+            for (let x = -canvas.width; x < canvas.width * 2; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, horizonY - 20);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // 2. Render Fighters
+            const p1Color = FIGHTERS[gameState.p1Fighter].color;
+            const p2Color = FIGHTERS[gameState.p2Fighter].color;
+
+            // Update Animation Frames
+            p1Visual.frame += 0.08;
+            p2Visual.frame += 0.08;
+
+            // Draw P1 (Left facing Right)
+            drawFighter(
+                canvas.width * p1Visual.x + (p1Visual.attackProgress * 80), 
+                canvas.height * p1Visual.y - (p1Visual.recoil * 5), 
+                1, 
+                p1Color, 
+                gameState.p1Fighter, 
+                p1Visual
+            );
+
+            // Draw P2 (Right facing Left)
+            drawFighter(
+                canvas.width * p2Visual.x - (p2Visual.attackProgress * 80), 
+                canvas.height * p2Visual.y - (p2Visual.recoil * 5), 
+                -1, 
+                p2Color, 
+                gameState.p2Fighter, 
+                p2Visual
+            );
+
+            // 3. Render Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.02;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = Math.max(0, p.alpha);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+
+                if (p.alpha <= 0) particles.splice(i, 1);
+            }
+
+            // 4. Render Floating Text (Damage / Miss)
+            for (let i = floatTexts.length - 1; i >= 0; i--) {
+                let ft = floatTexts[i];
+                ft.y -= 1.2;
+                ft.alpha -= 0.015;
+                ctx.font = '900 24px Orbitron';
+                ctx.fillStyle = ft.color;
+                ctx.globalAlpha = Math.max(0, ft.alpha);
+                ctx.textAlign = 'center';
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.globalAlpha = 1.0;
+
+                if (ft.alpha <= 0) floatTexts.splice(i, 1);
+            }
+
+            animationFrameId = requestAnimationFrame(renderStage);
+        }
+
+        // Draw Stylized Canvas Fighter Avatar
+        function drawFighter(x, y, dir, color, fighterKey, state) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(dir, 1);
+
+            const bob = Math.sin(state.frame) * 4;
+            const fighterInfo = FIGHTERS[fighterKey];
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.beginPath();
+            ctx.ellipse(0, 10, 28, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body Aura Glow
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 15;
+
+            // Torso / Suit
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.roundRect(-16, -55 + bob, 32, 42, 8);
+            ctx.fill();
+
+            // Head
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.arc(0, -70 + bob, 16, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Visor / Eyes
+            ctx.fillStyle = fighterInfo.secondary;
+            ctx.beginPath();
+            ctx.roundRect(2, -74 + bob, 12, 6, 3);
+            ctx.fill();
+
+            // Arms (Punches during attack state)
+            ctx.fillStyle = color;
+            if (state.anim === 'attack') {
+                ctx.beginPath();
+                ctx.roundRect(10, -50 + bob, 35, 10, 4); // Extended Fist
+                ctx.fill();
+            } else {
+                ctx.beginPath();
+                ctx.roundRect(5, -48 + bob, 14, 22, 5); // Idle Guard
+                ctx.fill();
+            }
+
+            // Hit Spark overlay if staggering
+            if (state.anim === 'hit') {
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(0, -40, 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        // Particle Explosions
+        function spawnSparks(x, y, color) {
+            for (let i = 0; i < 25; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    size: Math.random() * 5 + 2,
+                    color: color,
+                    alpha: 1.0
+                });
+            }
+        }
+
+        function spawnFloatText(text, x, y, color) {
+            floatTexts.push({
+                text: text,
+                x: x,
+                y: y,
+                color: color,
+                alpha: 1.0
+            });
+        }
+
+        // =========================================================
+        // UI SCREEN & MODAL MANAGERS
+        // =========================================================
+        function switchScreen(screenId) {
+            const screens = ['screen-start', 'screen-select', 'screen-battle', 'screen-victory'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(screenId);
+            if (target) target.classList.remove('hidden');
+
+            if (screenId === 'screen-battle') {
+                resizeCanvas();
+                if (!animationFrameId) renderStage();
+            }
+        }
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        }
+
+        function togglePause() {
+            gameState.isPaused = !gameState.isPaused;
+            const pauseModal = document.getElementById('modal-pause');
+            if (gameState.isPaused) {
+                pauseModal.classList.remove('hidden');
+                clearInterval(gameState.timerInterval);
+            } else {
+                pauseModal.classList.add('hidden');
+                startTimer();
+            }
+        }
+
+        // =========================================================
+        // CHARACTER SELECTION LOGIC
+        // =========================================================
+        function selectFighter(fighterKey) {
+            playSound('click');
+            // Toggle selection between P1 and P2
+            if (gameState.p1Fighter !== fighterKey) {
+                gameState.p1Fighter = fighterKey;
+            } else {
+                gameState.p2Fighter = fighterKey;
+            }
+
+            // Update UI card badges
+            document.querySelectorAll('.fighter-card').forEach(card => {
+                card.classList.remove('border-red-500', 'border-blue-500', 'neon-border-p1', 'neon-border-p2');
+                card.querySelector('.p1-badge').classList.add('hidden');
+                card.querySelector('.p2-badge').classList.add('hidden');
+            });
+
+            const cardP1 = document.getElementById(`card-${gameState.p1Fighter}`);
+            if (cardP1) {
+                cardP1.classList.add('neon-border-p1');
+                cardP1.querySelector('.p1-badge').classList.remove('hidden');
+            }
+
+            const cardP2 = document.getElementById(`card-${gameState.p2Fighter}`);
+            if (cardP2) {
+                cardP2.classList.add('neon-border-p2');
+                cardP2.querySelector('.p2-badge').classList.remove('hidden');
+            }
+
+            document.getElementById('p1-select-name').innerText = FIGHTERS[gameState.p1Fighter].name;
+            document.getElementById('p2-select-name').innerText = FIGHTERS[gameState.p2Fighter].name;
+        }
+
+        // =========================================================
+        // BATTLE SYSTEM & QUESTION SHUFFLING LOGIC
+        // =========================================================
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initBattle() {
+            gameState.p1Hp = 100;
+            gameState.p2Hp = 100;
+            gameState.p1Ult = 0;
+            gameState.p2Ult = 0;
+            gameState.p1Combo = 0;
+            gameState.p2Combo = 0;
+            gameState.p1WrongCount = 0;
+            gameState.p2WrongCount = 0;
+            gameState.p1CorrectCount = 0;
+            gameState.p2CorrectCount = 0;
+            gameState.p1MaxCombo = 0;
+            gameState.p2MaxCombo = 0;
+            gameState.currentTurn = 1;
+            gameState.isPaused = false;
+            gameState.buttonsLocked = false;
+
+            // Prepare 20 Question Pool (No repeats per game session)
+            gameState.questionPool = shuffleArray(QUESTIONS_DATA);
+
+            // Set Fighter names in Battle UI
+            document.getElementById('b-p1-name').innerText = `P1: ${FIGHTERS[gameState.p1Fighter].name.toUpperCase()}`;
+            document.getElementById('b-p2-name').innerText = `P2: ${FIGHTERS[gameState.p2Fighter].name.toUpperCase()}`;
+
+            updateBarsUI();
+            switchScreen('screen-battle');
+            loadNextQuestion();
+        }
+
+        function updateBarsUI() {
+            // HP Bars
+            document.getElementById('b-p1-hp-bar').style.width = `${Math.max(0, gameState.p1Hp)}%`;
+            document.getElementById('b-p2-hp-bar').style.width = `${Math.max(0, gameState.p2Hp)}%`;
+            document.getElementById('b-p1-hp-text').innerText = `${Math.max(0, gameState.p1Hp)} HP`;
+            document.getElementById('b-p2-hp-text').innerText = `${Math.max(0, gameState.p2Hp)} HP`;
+
+            // Ultimate Meters
+            document.getElementById('b-p1-ult-bar').style.width = `${gameState.p1Ult}%`;
+            document.getElementById('b-p2-ult-bar').style.width = `${gameState.p2Ult}%`;
+
+            const p1Badge = document.getElementById('b-p1-ult-badge');
+            const p2Badge = document.getElementById('b-p2-ult-badge');
+
+            if (gameState.p1Ult >= 100) p1Badge.classList.remove('hidden');
+            else p1Badge.classList.add('hidden');
+
+            if (gameState.p2Ult >= 100) p2Badge.classList.remove('hidden');
+            else p2Badge.classList.add('hidden');
+        }
+
+        function loadNextQuestion() {
+            if (gameState.p1Hp <= 0 || gameState.p2Hp <= 0) {
+                endGame();
+                return;
+            }
+
+            // If pool exhausted, reshuffle questions
+            if (gameState.questionPool.length === 0) {
+                gameState.questionPool = shuffleArray(QUESTIONS_DATA);
+            }
+
+            gameState.currentQuestion = gameState.questionPool.pop();
+            gameState.buttonsLocked = false;
+
+            // Render Question Text
+            document.getElementById('question-text').innerText = gameState.currentQuestion.question;
+
+            // Shuffle 4 Choices FOR THIS QUESTION (Must randomize order while preserving internal correct match)
+            const shuffledChoices = shuffleArray(gameState.currentQuestion.choices);
+
+            const buttons = document.querySelectorAll('.ans-btn');
+            buttons.forEach((btn, index) => {
+                const choiceText = shuffledChoices[index];
+                btn.innerText = choiceText;
+                btn.disabled = false;
+                btn.className = "ans-btn arcade-btn py-3 px-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-bold text-sm sm:text-base hover:bg-indigo-950 hover:border-indigo-400 transition-colors text-center truncate";
+            });
+
+            // Update Turn Badge UI
+            const turnBadge = document.getElementById('turn-badge');
+            const turnDot = document.getElementById('turn-indicator-dot');
+            const turnText = document.getElementById('turn-text');
+            const comboBadge = document.getElementById('combo-badge');
+            const comboCount = document.getElementById('combo-count');
+
+            const isP1 = gameState.currentTurn === 1;
+            const currentFighterName = isP1 ? FIGHTERS[gameState.p1Fighter].name : FIGHTERS[gameState.p2Fighter].name;
+            const activeCombo = isP1 ? gameState.p1Combo : gameState.p2Combo;
+
+            turnBadge.className = isP1 
+                ? "px-3 py-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-400 font-arcade text-xs sm:text-sm font-bold flex items-center gap-2"
+                : "px-3 py-1 rounded-lg bg-blue-600/20 border border-blue-500/40 text-blue-400 font-arcade text-xs sm:text-sm font-bold flex items-center gap-2";
+
+            turnDot.className = isP1 ? "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" : "w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping";
+            turnText.innerText = `PLAYER ${gameState.currentTurn}'S TURN (${currentFighterName.toUpperCase()})`;
+
+            // Combo display
+            if (activeCombo > 0) {
+                comboBadge.classList.remove('hidden');
+                comboCount.innerText = activeCombo;
+            } else {
+                comboBadge.classList.add('hidden');
+            }
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(gameState.timerInterval);
+            gameState.timer = 10;
+            document.getElementById('battle-timer').innerText = gameState.timer;
+
+            gameState.timerInterval = setInterval(() => {
+                if (gameState.isPaused) return;
+                gameState.timer--;
+                document.getElementById('battle-timer').innerText = gameState.timer;
+
+                if (gameState.timer <= 3 && gameState.timer > 0) {
+                    playSound('tick');
+                }
+
+                if (gameState.timer <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    handleAnswer(-1); // Timeout penalty
+                }
+            }, 1000);
+        }
+
+        // Answer Submission Handler
+        function handleAnswer(choiceIndex) {
+            if (gameState.buttonsLocked) return;
+            gameState.buttonsLocked = true;
+            clearInterval(gameState.timerInterval);
+
+            // Lock all buttons immediately to prevent double clicks
+            const buttons = document.querySelectorAll('.ans-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const isP1 = gameState.currentTurn === 1;
+            let selectedText = "";
+            let isCorrect = false;
+
+            if (choiceIndex >= 0) {
+                selectedText = buttons[choiceIndex].innerText;
+                isCorrect = (selectedText === gameState.currentQuestion.correct);
+            }
+
+            // Visual feedback on selected button
+            if (choiceIndex >= 0) {
+                if (isCorrect) {
+                    buttons[choiceIndex].classList.add('bg-emerald-600', 'border-emerald-400', 'text-white');
+                } else {
+                    buttons[choiceIndex].classList.add('bg-red-600', 'border-red-400', 'text-white');
+                }
+            }
+
+            if (isCorrect) {
+                processCorrectAnswer(isP1);
+            } else {
+                processWrongAnswer(isP1, choiceIndex < 0 ? "TIME UP!" : "WRONG!");
+            }
+        }
+
+        function processCorrectAnswer(isP1) {
+            const attacker = isP1 ? 1 : 2;
+            const defender = isP1 ? 2 : 1;
+
+            // Increment Stats
+            if (isP1) {
+                gameState.p1CorrectCount++;
+                gameState.p1Combo++;
+                if (gameState.p1Combo > gameState.p1MaxCombo) gameState.p1MaxCombo = gameState.p1Combo;
+                gameState.p1Ult = Math.min(100, gameState.p1Ult + 25);
+            } else {
+                gameState.p2CorrectCount++;
+                gameState.p2Combo++;
+                if (gameState.p2Combo > gameState.p2MaxCombo) gameState.p2MaxCombo = gameState.p2Combo;
+                gameState.p2Ult = Math.min(100, gameState.p2Ult + 25);
+            }
+
+            const currentUlt = isP1 ? gameState.p1Ult : gameState.p2Ult;
+            const isUltAttack = (currentUlt >= 100);
+
+            // Damage Calculation
+            let damage = 20;
+            if (isP1 && gameState.p1Combo > 1) damage += (gameState.p1Combo * 2);
+            if (!isP1 && gameState.p2Combo > 1) damage += (gameState.p2Combo * 2);
+
+            if (isUltAttack) {
+                damage += 20; // Ultimate bonus damage
+                if (isP1) gameState.p1Ult = 0;
+                else gameState.p2Ult = 0;
+            }
+
+            // Apply Damage
+            if (isP1) gameState.p2Hp = Math.max(0, gameState.p2Hp - damage);
+            else gameState.p1Hp = Math.max(0, gameState.p1Hp - damage);
+
+            updateBarsUI();
+
+            // Trigger Animation States
+            const attackerVis = isP1 ? p1Visual : p2Visual;
+            const defenderVis = isP1 ? p2Visual : p1Visual;
+
+            attackerVis.anim = 'attack';
+            attackerVis.attackProgress = 1;
+            defenderVis.anim = 'hit';
+            defenderVis.recoil = 1;
+
+            // Audio & Screen Shake
+            playSound(isUltAttack ? 'ult' : 'hit');
+            const arenaBox = document.getElementById('game-container');
+            arenaBox.classList.add('shake');
+            setTimeout(() => arenaBox.classList.remove('shake'), 400);
+
+            // Canvas FX Sparks
+            const sparkX = isP1 ? canvas.width * 0.65 : canvas.width * 0.35;
+            const sparkColor = FIGHTERS[isP1 ? gameState.p1Fighter : gameState.p2Fighter].color;
+            spawnSparks(sparkX, canvas.height * 0.55, sparkColor);
+            spawnFloatText(`-${damage} HP`, sparkX, canvas.height * 0.5, '#ef4444');
+
+            // Show Feedback Overlay
+            showFeedbackToast(
+                isUltAttack ? "ULTIMATE HIT!" : "CORRECT HIT!",
+                gameState.currentQuestion.rule,
+                true
+            );
+
+            // Reset Animation after delay and switch turns
+            setTimeout(() => {
+                attackerVis.anim = 'idle';
+                attackerVis.attackProgress = 0;
+                defenderVis.anim = 'idle';
+                defenderVis.recoil = 0;
+
+                gameState.currentTurn = defender;
+                loadNextQuestion();
+            }, 1800);
+        }
+
+        function processWrongAnswer(isP1, titleText) {
+            const defender = isP1 ? 2 : 1;
+
+            // Reset Combo Streak & Add Wrong Count
+            if (isP1) {
+                gameState.p1Combo = 0;
+                gameState.p1WrongCount++;
+            } else {
+                gameState.p2Combo = 0;
+                gameState.p2WrongCount++;
+            }
+
+            const attackerVis = isP1 ? p1Visual : p2Visual;
+            attackerVis.anim = 'hit'; // Miss stagger
+
+            playSound('miss');
+
+            const sparkX = isP1 ? canvas.width * 0.35 : canvas.width * 0.65;
+            spawnFloatText("MISS!", sparkX, canvas.height * 0.5, '#94a3b8');
+
+            // Educational Feedback: Show correct answer clearly
+            showFeedbackToast(
+                titleText,
+                `Correct answer: "${gameState.currentQuestion.correct}"`,
+                false
+            );
+
+            setTimeout(() => {
+                attackerVis.anim = 'idle';
+                gameState.currentTurn = defender;
+                loadNextQuestion();
+            }, 2000);
+        }
+
+        function showFeedbackToast(title, detail, isSuccess) {
+            const toast = document.getElementById('arena-feedback');
+            const titleEl = document.getElementById('fb-title');
+            const detailEl = document.getElementById('fb-detail');
+
+            titleEl.innerText = title;
+            titleEl.className = isSuccess 
+                ? "font-arcade text-3xl sm:text-5xl font-black italic tracking-wide text-amber-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] animate-bounce"
+                : "font-arcade text-3xl sm:text-5xl font-black italic tracking-wide text-red-500 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] animate-bounce";
+
+            detailEl.innerText = detail;
+
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 1700);
+        }
+
+        // =========================================================
+        // END GAME & STATS LOGIC
+        // =========================================================
+        function endGame() {
+            clearInterval(gameState.timerInterval);
+            playSound('ko');
+
+            const p1Won = gameState.p2Hp <= 0;
+            const winnerName = p1Won 
+                ? `PLAYER 1 (${FIGHTERS[gameState.p1Fighter].name.toUpperCase()})` 
+                : `PLAYER 2 (${FIGHTERS[gameState.p2Fighter].name.toUpperCase()})`;
+
+            document.getElementById('vic-winner-text').innerText = `${winnerName} WINS!`;
+
+            // Check Perfect Round
+            const winnerWrongCount = p1Won ? gameState.p1WrongCount : gameState.p2WrongCount;
+            const perfBadge = document.getElementById('vic-perfect-badge');
+            if (winnerWrongCount === 0) {
+                perfBadge.classList.remove('hidden');
+            } else {
+                perfBadge.classList.add('hidden');
+            }
+
+            // Score Calculations
+            const winnerCorrect = p1Won ? gameState.p1CorrectCount : gameState.p2CorrectCount;
+            const winnerMaxCombo = p1Won ? gameState.p1MaxCombo : gameState.p2MaxCombo;
+            const totalWinnerAns = winnerCorrect + winnerWrongCount;
+            const acc = totalWinnerAns > 0 ? Math.round((winnerCorrect / totalWinnerAns) * 100) : 100;
+            const finalScore = (winnerCorrect * 150) + (winnerMaxCombo * 100);
+
+            document.getElementById('stat-score').innerText = finalScore;
+            document.getElementById('stat-acc').innerText = `${acc}%`;
+            document.getElementById('stat-combo').innerText = `${winnerMaxCombo} HIT`;
+
+            // Set Winner Avatar Icon
+            const winnerFighterKey = p1Won ? gameState.p1Fighter : gameState.p2Fighter;
+            const avatarBox = document.getElementById('vic-avatar-box');
+            avatarBox.className = `w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-amber-400 bg-slate-900 flex items-center justify-center shadow-[0_0_30px_rgba(234,179,8,0.5)] mx-auto`;
+            document.getElementById('vic-avatar-icon').className = `fa-solid ${FIGHTERS[winnerFighterKey].icon} text-6xl text-amber-400 animate-bounce`;
+
+            switchScreen('screen-victory');
+        }
+
+        function restartMatch() {
+            closeModal('modal-pause');
+            initBattle();
+        }
+
+        function quitToMain() {
+            closeModal('modal-pause');
+            clearInterval(gameState.timerInterval);
+            switchScreen('screen-start');
+        }
+
+        // Initialize default fighter selection card styles on load
+        window.onload = function() {
+            selectFighter('blaze');
+            selectFighter('thunder');
+        };
+    </script>
+</body>
+</html>
